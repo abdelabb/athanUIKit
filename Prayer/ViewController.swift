@@ -78,12 +78,7 @@ class ViewController: UIViewController {
     var prayers: [Prayer] = []
     var timeUntilNextPrayer: TimeInterval?
     var timer = Timer()
-    
-  
-    //let timer2 = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { timer in
-        
-        //print("Timer fired!")
-    //}
+
     var nextPrayer = PrayerType.fajr
   
    
@@ -100,13 +95,17 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+         let nib = UINib(nibName: "TableViewCell", bundle: nil)
         locationManager.delegate = self
         
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
+        tablView.register(nib, forCellReuseIdentifier: "TableViewCell")
         tablView.dataSource = self
+        tablView.delegate = self
          timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.update), userInfo: nil, repeats: true)
+        
+       // tablView.rowHeight = 20
         
 
         
@@ -268,7 +267,7 @@ extension ViewController: CLLocationManagerDelegate{
                 let cityName = placemark.locality ?? "" // Nom de la ville
                 let countryName = placemark.country ?? "" // Nom du pays
                 
-                    self.cityName.text = cityName
+                self.cityName.text = cityName
                 self.countryName.text = countryName
                     print(cityName)
                     //self.countryName = countryName
@@ -303,8 +302,9 @@ extension ViewController: CLLocationManagerDelegate{
                     self.prayerTimes = prayerTimes
                     self.timeUntilNextPrayer = self.timeToNextPrayer(prayerTimes: prayerTimes)
                     if let nextPrayer = self.nextPrayerString(prayer: prayerTimes){
-                        self.nextPriere.text = nextPrayer.rawValue
-                        self.timeOfNextPrayer.text = self.formattedTime(timeInterval: self.timeUntilNextPrayer!)
+                        
+                        self.nextPriere.text = nextPrayer.rawValue.uppercased()
+                        self.timeOfNextPrayer.text = self.formattedTime(timeInterval: self.timeUntilNextPrayer!).uppercased()
                         
                     }
                 }
@@ -318,20 +318,22 @@ extension ViewController: CLLocationManagerDelegate{
 
 // MARK: - UITableViewDataSource
 
-extension ViewController: UITableViewDataSource{
+extension ViewController: UITableViewDataSource, UITableViewDelegate{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return prayers.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cellIdentifier", for: indexPath)
-        let prayer = prayers[indexPath.row]
-            
-            
-            cell.textLabel?.text = "\(prayer.name) \(prayer.time)"
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TableViewCell", for: indexPath) as! TableViewCell
+        
+       // cell.textLabel?.text = "\(prayer.name) \(prayer.time)"
+        cell.prayerName.text = prayers[indexPath.row].name
+        cell.prayerTime.text = prayers[indexPath.row].time
+
             return cell
             
     }
+    
     
     
 }
