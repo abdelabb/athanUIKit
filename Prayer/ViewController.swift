@@ -8,6 +8,36 @@
 import UIKit
 import CoreLocation
 import Foundation
+import UserNotifications
+
+
+enum NotificationMode: String, CaseIterable{
+    case silencieux
+    case desactiver
+    case normal
+    
+    var imageName: String {
+        switch self {
+        case.silencieux:
+            return "speaker.slash.fill"
+        case.desactiver:
+            return "speaker.fill"
+        case.normal:
+            return "speaker.wave.3.fill"
+        }
+    }
+    
+    var soundName: String{
+        switch self {
+        case.silencieux:
+            return ""
+        case.desactiver:
+            return ""
+        case.normal:
+            return "Adhan.m4r"
+        }
+    }
+    }
 
 enum PrayerType: String{
     case fajr
@@ -35,27 +65,43 @@ struct PrayerTimings: Codable{
 struct Prayer{
     var name: String
     var time: String
+   // var mode: String
 
 }
+class NotificationSettings: ObservableObject {
+    @Published var selectedFajr: NotificationMode = .normal
+    @Published var selectedDhor: NotificationMode = .normal
+    @Published var selectedAsr: NotificationMode = .normal
+    @Published var selectedMaghreb: NotificationMode = .normal
+    @Published var selectedIsha: NotificationMode = .normal
+}
+
+
 
 //MARK: - ViewController
 
 class ViewController: UIViewController {
+ 
     
     var prayerTimes: PrayerTimings? {
         didSet{
             if let prayerTimes = prayerTimes{
                 prayers = [
                     Prayer(name: "Fajr", time: prayerTimes.Fajr),
+                    
                     Prayer(name: "Dhuhr", time: prayerTimes.Dhuhr),
+                    
                     Prayer(name: "Asr", time: prayerTimes.Asr),
-                    Prayer(name: "Maghrib", time: prayerTimes.Maghrib),
-                    Prayer(name: "Isha", time: prayerTimes.Isha)
+                    
+                           Prayer(name: "Maghrib", time: prayerTimes.Maghrib),
+                    
+                           Prayer(name: "Isha", time: prayerTimes.Isha),
                 ]
                 tablView.reloadData()
             }
         }
     }
+    
     
     var nextPrayerTitle: String{
         if let timeUntilNextPrayer = timeUntilNextPrayer{
@@ -95,7 +141,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-         let nib = UINib(nibName: "TableViewCell", bundle: nil)
+        let nib = UINib(nibName: "TableViewCell", bundle: nil)
         locationManager.delegate = self
         
         locationManager.requestWhenInUseAuthorization()
@@ -103,14 +149,16 @@ class ViewController: UIViewController {
         tablView.register(nib, forCellReuseIdentifier: "TableViewCell")
         tablView.dataSource = self
         tablView.delegate = self
-         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.update), userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.update), userInfo: nil, repeats: true)
         
-       // tablView.rowHeight = 20
+        UserDefaults.standard.set("selectedFajr", forKey: NotificationMode.normal.rawValue)
         
-
+        // tablView.rowHeight = 20
         
-
     }
+        
+
+    
     @objc func update(){
         if timeUntilNextPrayer != nil{
             self.timeUntilNextPrayer = timeToNextPrayer(prayerTimes: prayerTimes!)
@@ -119,6 +167,20 @@ class ViewController: UIViewController {
             
         }
     }
+//    func getNotificationMode(for prayer: PrayerType) -> NotificationMode {
+//        switch prayer {
+//        case .fajr:
+//            return selectedFajr
+//        case .dhuhr:
+//            return selectedDhor
+//        case .asr:
+//            return selectedAsr
+//        case .maghreb:
+//            return selectedMaghreb
+//        case .isha:
+//            return selectedisha
+//        }
+//    }
 
     func getFormattedDate() -> String {
         let date = Date()
@@ -319,22 +381,38 @@ extension ViewController: CLLocationManagerDelegate{
 // MARK: - UITableViewDataSource
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate{
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return prayers.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        let modeSelect: NotificationMode = .desactiver
+//        let notif = TableViewCell()
         let cell = tableView.dequeueReusableCell(withIdentifier: "TableViewCell", for: indexPath) as! TableViewCell
-        
+         
        // cell.textLabel?.text = "\(prayer.name) \(prayer.time)"
         cell.prayerName.text = prayers[indexPath.row].name
         cell.prayerTime.text = prayers[indexPath.row].time
+        
+        // notif.updateNotifMode(for: modeSelect)
+        
+           
+      
+        
+//        if let imageSound = UIImage(systemName: "speaker.wave.3.fill"){
+//            cell.notificationButton.setImage(imageSound, for: .normal)
+//            cell.notificationButton.titleLabel?.isHidden = true
+//            
+//        }
+      
 
             return cell
             
     }
     
-    
+   
+
     
 }
 

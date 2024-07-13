@@ -3,6 +3,7 @@
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -36,6 +37,17 @@
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EaU-eT-g44">
+                        <rect key="frame" x="326" y="15" width="46" height="35"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <state key="normal" title="Button"/>
+                        <buttonConfiguration key="configuration" style="plain">
+                            <imageReference key="image" image="speaker.fill" catalog="system" variableValue="0.80000000000000004"/>
+                        </buttonConfiguration>
+                        <connections>
+                            <action selector="modeSelected:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="vf2-y8-WFN"/>
+                        </connections>
+                    </button>
                 </subviews>
                 <constraints>
                     <constraint firstItem="IWi-4T-RLr" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="20" id="0tA-h0-mt6"/>
@@ -48,10 +60,14 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="notificationButton" destination="EaU-eT-g44" id="A0C-mE-alY"/>
                 <outlet property="prayerName" destination="m0j-kj-QyF" id="lUK-Yu-R1R"/>
                 <outlet property="prayerTime" destination="IWi-4T-RLr" id="P3D-Mo-24y"/>
             </connections>
             <point key="canvasLocation" x="-30.534351145038165" y="42.605633802816904"/>
         </tableViewCell>
     </objects>
+    <resources>
+        <image name="speaker.fill" catalog="system" width="128" height="125"/>
+    </resources>
 </document>
